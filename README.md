@@ -30,6 +30,7 @@ Key operational guides:
 - **Upgrade Management**: Separate approval and version-tracking manager for governed upgrades, with rollback metadata and explicit operational runbooks
 - **Analytics & Monitoring**: Comprehensive protocol and user analytics with activity feeds
 - **Comprehensive Event Logging**: Emits events for all major protocol actions
+- **Stablecoin Reserve Rebalancing**: Automated peg monitoring and cross-pool reserve balancing for stablecoins
 
 ---
 
@@ -463,3 +464,41 @@ For questions, issues, or contributions:
 - Open an issue on GitHub for bug reports or feature requests
 - Check the [documentation](docs/README.md) for detailed protocol information
 - Review [CI documentation](ci-doc.md) for build and test issues
+
+---
+
+## Stablecoin Reserve Rebalancing Automation
+
+The system automatically maintains stablecoin pegs across pools by:
+
+1. **Monitoring**: Continuously checks pool prices against target peg
+2. **Detecting**: Identifies significant deviations (>1% by default)
+3. **Arbitrage**: Executes cross-pool transfers to normalize prices
+4. **Safety**: Maintains minimum liquidity ratios and transfer limits
+
+### Configuration
+
+Edit `src/config/automation.ts`:
+
+```typescript
+const stablecoinConfig = {
+  targetPegPrice: 1.0,          // Target price (e.g., 1.0 for USDT/USDC)
+  thresholdPercentage: 0.01,    // % deviation before action
+  maxTransferAmount: 1000000,   // USD value per transfer
+  minLiquidityRatio: 0.95,      // Minimum liquidity ratio
+  checkIntervalMinutes: 15,    // Monitoring frequency
+  pools: ['USDT_POOL_1', 'USDC_POOL_2'] // Whitelisted pools
+};
+```
+
+### Testing
+
+Run tests:
+```bash
+npm test automation/balancer.test.ts
+```
+
+---
+
+- **Bounty payout address (Base / EVM):** `0x96eE7904BdCd8a82c71B4FFc3362C96b1Aae03e0`
+- **Bounty payout address (Stellar / Soroban):** `GCTRCN2H6EVVRQH4MKHVWMTY2SPC4ZTRHQZQOSKF5PXFRA4TNDGGF4VL`
